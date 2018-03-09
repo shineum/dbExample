@@ -11,6 +11,7 @@ module.exports.query = query;
 module.exports.squelQuery = squelQuery;
 module.exports.limitWithOffset = limitWithOffset;
 module.exports.NOW = NOW;
+module.exports.dbHandler = dbHandler;
 
 function init(pDbType, pDbConfig) {
     db = require("./" + pDbType + "Wrapper");
@@ -56,5 +57,49 @@ function limitWithOffset(pQuery, pOffset, pRows) {
 
 function NOW() {
     return db && db.NOW;
+}
+
+function dbHandler(pfDbOperation, cbError) {
+    let __commit = function(pDbCon) {
+        db.commit(pDbCon, (err) => {
+            if (err) console.log(err);
+            db.release(pDbCon);
+        });
+    };
+
+    let __rollback = function(pDbCon) {
+        db.rollback(pDbCon, (err) => {
+            if (err) console.log(err);
+            db.release(pDbCon);
+        });
+    };
+
+    if (!db) {
+        cbError("Init Error");
+    } else {
+        db.getConnection( (err, pDbCon) => {
+            if (err) {
+                console.log(err);
+                cbError("Connection Error");
+            } else {
+                db.begin(pDbCon, (err) => {
+                    if (err) {
+                        console.log(err);
+                        __rollback(pDbCon);
+                    } else {
+                        try {
+                            pfDbOperation(pDbCon
+                                , () => { __commit(pDbCon); }
+                                , () => { __rollback(pDbCon); }
+                            );
+                        } catch (e) {
+                            console.log(e);
+                            __rollback(pDbCon);
+                        }
+                    }
+                });
+            }    
+        });
+    } 
 }
 

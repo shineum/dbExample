@@ -4,13 +4,13 @@ var squel = require('squel');
 const mssqlConfig = {
     user: 'testuser',
     password: 'testpassword',
-    server: 'localhost', 
+    server: 'localhost',
     port: 50053,
     database: 'nodetest',
     pool: {
         max: 10,
         min: 0
-    }         
+    }
 }
 
 pDb.init("mssql", mssqlConfig);
@@ -20,32 +20,22 @@ setTimeout(function() {
         if (err) {
             console.log(err);
         } else {
-            pDb.begin(pDbCon, (err) => {
-                if (err) {
-                    console.log(err);
-                    pDb.rollback(pDbCon, (err) => {
-                        if (err) console.log(err);
-                        pDb.release(pDbCon);
-                    });
-                } else {
-                    pDb.squelQuery(pDbCon, "select count(*) as cnt from test_table", (err, results) => {
-                        if (err) {
-                            console.log(err);
-                            pDb.rollback(pDbCon, (err) => {
-                                if (err) console.log(err);
-                                pDb.release(pDbCon);
-                            });
-                        } else {
-                            console.log(results);
-                            pDb.commit(pDbCon, (err) => {
-                                if (err) console.log(err);
-                                pDb.release(pDbCon);
-                            });
-                        }
-                    });
-                }
-            });
-        }    
+          pDb.dbHandler(
+              (pDbCon, cbSuccess, cbError) => {
+                  pDb.squelQuery(pDbCon, "select count(*) as cnt from test_table", (err, results) => {
+                      if (err) {
+                          cbError();
+                      } else {
+                          console.log(results);
+                          cbSuccess();
+                      }
+                  } );
+              }
+              , (err) => {
+                  console.log(err);
+              }
+          );
+        }
     });
 }, 1000);
 
