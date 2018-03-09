@@ -1,0 +1,17 @@
+{
+  "name": "dbexample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "shineum",
+  "license": "MIT",
+  "dependencies": {
+    "mssql": "^4.1.0",
+    "mysql": "^2.15.0",
+    "squel": "^5.12.0"
+  }
+}
+
