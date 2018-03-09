@@ -22,7 +22,8 @@ setTimeout(function() {
         } else {
           pDb.dbHandler(
               (pDbCon, cbSuccess, cbError) => {
-                  pDb.squelQuery(pDbCon, "select count(*) as cnt from test_table", (err, results) => {
+                  var sql = squel.select().from("test_table").field("count(*) as cnt");
+                  pDb.squelQuery(pDbCon, sql.toString(), (err, results) => {                
                       if (err) {
                           cbError();
                       } else {
