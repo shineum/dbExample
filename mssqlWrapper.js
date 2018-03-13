@@ -9,6 +9,7 @@ module.exports.release = release;
 module.exports.close = close;
 module.exports.query = query;
 module.exports.squelQuery = squelQuery;
+module.exports.limit = limit;
 module.exports.limitWithOffset = limitWithOffset;
 module.exports.NOW = 'CURRENT_TIMESTAMP';
 
@@ -55,17 +56,20 @@ function query(pDbCon, pQuery, pParams, pCallback) {
 function squelQuery(pDbCon, pQuery, pCallback, pCheckId) {
     if (pCheckId) {
         pQuery += "; select SCOPE_IDENTITY() as id";
-    }        
+    }
     new mssql.Request(pDbCon).query(pQuery, (err, result) => {
         if (pCheckId) {
             pCallback(err, {insertId: result.recordset[0].id});
         } else {
             pCallback(err, result && result.recordset);
-        }        
-    });    
+        }
+    });
+}
+
+function limit(pQuery, pRows) {
+    return pQuery.replace(/select/i, "select top " + pRows);
 }
 
 function limitWithOffset(pQuery, pOffset, pRows) {
     return pQuery + " OFFSET " + pOffset + " ROWS FETCH NEXT " + pRows + " ROWS ONLY";
 }
-

@@ -9,6 +9,7 @@ module.exports.release = release;
 module.exports.close = close;
 module.exports.query = query;
 module.exports.squelQuery = squelQuery;
+module.exports.limit = limit;
 module.exports.limitWithOffset = limitWithOffset;
 module.exports.NOW = 'NOW()';
 
@@ -45,7 +46,7 @@ function close(pCallback) {
 }
 
 function query(pDbCon, pQuery, pParams, pCallback) {
-    
+
     // implement here
 
     typeof pCallback === 'function' && pCallback();
@@ -54,10 +55,13 @@ function query(pDbCon, pQuery, pParams, pCallback) {
 function squelQuery(pDbCon, pQuery, pCallback, pCheckId) {
     pDbCon.query(pQuery, (err, result, fields) => {
         pCallback(err, result, fields);
-    });    
+    });
+}
+
+function limit(pQuery, pRows) {
+    return pQuery + " limit " + pRows;
 }
 
 function limitWithOffset(pQuery, pOffset, pRows) {
     return pQuery + " limit " + pOffset + ", " + pRows;
 }
-

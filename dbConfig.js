@@ -9,6 +9,7 @@ module.exports.release = release;
 module.exports.close = close;
 module.exports.query = query;
 module.exports.squelQuery = squelQuery;
+module.exports.limit = limit;
 module.exports.limitWithOffset = limitWithOffset;
 module.exports.NOW = NOW;
 module.exports.dbHandler = dbHandler;
@@ -18,7 +19,7 @@ function init(pDbType, pDbConfig) {
     db.init(pDbConfig);
 }
 
-function getConnection(pCallback) {    
+function getConnection(pCallback) {
     db && db.getConnection(pCallback);
 }
 
@@ -51,8 +52,12 @@ function squelQuery(pDbCon, pQuery, pCallback, pCheckId) {
     db && db.squelQuery(pDbCon, pQuery, pCallback, pCheckId);
 }
 
+function limit(pQuery, pRows) {
+    return db && db.limit(pQuery, pRows);
+}
+
 function limitWithOffset(pQuery, pOffset, pRows) {
-    return db && db.limitWithOffset(args);
+    return db && db.limitWithOffset(pQuery, pOffset, pRows);
 }
 
 function NOW() {
@@ -98,8 +103,7 @@ function dbHandler(pfDbOperation, cbError) {
                         }
                     }
                 });
-            }    
+            }
         });
-    } 
+    }
 }
-
